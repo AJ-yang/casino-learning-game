@@ -967,23 +967,45 @@
     font-family:"Cinzel","Pretendard Variable",serif; font-weight:900; letter-spacing:2.5px;
     font-size: clamp(11px,3cqw,21px); color:#ffe7a0; white-space:nowrap;
     text-shadow:0 0 7px #ffc132, 0 0 16px #ff8a00, 0 0 30px rgba(255,120,0,.55); animation: entGlow 2.4s ease-in-out infinite; }
-  /* 원근 대리석 바닥 — 다이아 체커를 실제로 눕혀 소실점 원근 + 골드 줄눈 */
+  /* 원근 대리석 바닥 — 아이보리·샴페인 다이아 인레이 + 골드 줄눈 (벨라지오 톤) */
   .fd-marble { position:absolute; left:-32%; right:-32%; top:35%; height:135%; z-index:0; pointer-events:none;
     transform-origin: top center; transform: perspective(440px) rotateX(61deg);
     --tile: clamp(60px,15cqw,104px);
     background:
-      repeating-linear-gradient(0deg, rgba(214,180,110,.16) 0 1.5px, transparent 1.5px var(--tile)),
-      repeating-linear-gradient(90deg, rgba(214,180,110,.13) 0 1.5px, transparent 1.5px var(--tile)),
-      linear-gradient(45deg, #17171d 25%, transparent 25%, transparent 75%, #17171d 75%),
-      linear-gradient(45deg, #17171d 25%, transparent 25%, transparent 75%, #17171d 75%),
-      radial-gradient(ellipse 120% 90% at 50% 18%, #d8cfbc 0%, #b4aa92 55%, #66594a 100%);
+      repeating-linear-gradient(0deg, rgba(168,132,64,.28) 0 1.5px, transparent 1.5px var(--tile)),
+      repeating-linear-gradient(90deg, rgba(168,132,64,.22) 0 1.5px, transparent 1.5px var(--tile)),
+      linear-gradient(45deg, rgba(154,134,100,.42) 25%, transparent 25%, transparent 75%, rgba(154,134,100,.42) 75%),
+      linear-gradient(45deg, rgba(154,134,100,.42) 25%, transparent 25%, transparent 75%, rgba(154,134,100,.42) 75%),
+      repeating-linear-gradient(104deg, rgba(255,255,255,.06) 0 2px, transparent 2px 26px),
+      radial-gradient(ellipse 120% 90% at 50% 18%, #f0e7d3 0%, #d9cbaa 55%, #857458 100%);
     background-size: var(--tile) var(--tile), var(--tile) var(--tile),
-      var(--tile) var(--tile), var(--tile) var(--tile), auto;
+      var(--tile) var(--tile), var(--tile) var(--tile), auto, auto;
     background-position: 0 0, 0 0, 0 0,
-      calc(var(--tile)/2) calc(var(--tile)/2), 0 0;
+      calc(var(--tile)/2) calc(var(--tile)/2), 0 0, 0 0;
     -webkit-mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 99%);
             mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 99%);
     box-shadow: inset 0 14px 26px rgba(30,8,14,.5); }
+  /* 뒷벽 금테 아치 알코브 (몬테카를로 살롱 벽면 — 슬롯이 아치 안에 들어앉음) */
+  .fd-arches { position:absolute; left:3%; right:3%; top:7%; height:27%; z-index:0; pointer-events:none; opacity:.9; }
+  .fd-arches svg { width:100%; height:100%; display:block; }
+  /* 슬롯 존 사인 */
+  .fd-slotsign { position:absolute; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap;
+    font-family:"Cinzel","Pretendard Variable",serif; font-weight:800; letter-spacing:.28em;
+    font-size: clamp(6.5px,1.7cqw,10px); color:#ffe7a0; padding: clamp(2px,.7cqw,4px) clamp(5px,1.4cqw,9px);
+    background:linear-gradient(180deg,#201028,#140a18); border:1px solid rgba(230,200,120,.65); border-radius:5px;
+    text-shadow:0 0 6px rgba(255,190,60,.8); box-shadow:0 0 10px rgba(255,190,80,.3), 0 3px 6px rgba(0,0,0,.5); }
+  /* 행잉 사인보드 (천장 체인 + 금테 보드) */
+  .fd-hangsign { position:absolute; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap;
+    font-family:"Cinzel","Pretendard Variable",serif; font-weight:800; letter-spacing:.3em;
+    font-size: clamp(8px,2.2cqw,14px); color:#e8c878; padding: clamp(3px,.9cqw,6px) clamp(8px,2.4cqw,16px);
+    background:linear-gradient(180deg,#241430,#150c1c); border:1.5px solid rgba(230,200,120,.7); border-radius:6px;
+    text-shadow:0 0 8px rgba(255,200,100,.5); box-shadow:0 4px 10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08); }
+  .fd-hangsign i { position:absolute; top:-14px; width:1.5px; height:14px;
+    background:linear-gradient(180deg, rgba(202,164,90,.2), #caa45a); }
+  .fd-hangsign i.l { left:22%; } .fd-hangsign i.r { right:22%; }
+  /* 전체 웜 컬러 그레이딩 — 중앙 따뜻하게, 가장자리 차분하게 */
+  .fd-grade { position:absolute; inset:0; z-index:70; pointer-events:none; mix-blend-mode:soft-light; opacity:.85;
+    background: radial-gradient(ellipse 80% 65% at 50% 42%, rgba(255,196,120,.55), rgba(50,18,44,.4) 88%); }
   /* 바닥 반짝이 칩 (주우면 크레딧) */
   .fd-chipdrop { position:absolute; transform:translate(-50%,-50%); pointer-events:none;
     width: clamp(15px,3.8cqw,24px); line-height:0;
@@ -1059,13 +1081,14 @@
   .fd-rope-r { left: calc(50% + clamp(42px,12cqw,82px)); }
   /* 빽빽한 카펫 텍스처 (카지노 카펫 패턴) */
   /* 붉은 카펫 게임 피트(금장 테두리) */
-  .fd-redzone { position:absolute; left:50%; top:55%; transform:translate(-50%,-50%); width:64%; height:55%; z-index:0; pointer-events:none;
-    border-radius:49% / 47%;
+  .fd-redzone { position:absolute; left:50%; top:55%; transform:translate(-50%,-50%); width:66%; height:53%; z-index:0; pointer-events:none;
+    border-radius: clamp(26px,9cqw,72px);   /* 건축적인 라운드 사각 카펫 피트 */
     background:
       repeating-linear-gradient(45deg, rgba(255,220,150,.05) 0 1.5px, transparent 1.5px clamp(9px,2.4cqw,16px)),
       repeating-linear-gradient(-45deg, rgba(30,0,8,.14) 0 1.5px, transparent 1.5px clamp(9px,2.4cqw,16px)),
-      radial-gradient(ellipse 62% 60% at 50% 42%, #c8203c 0%, #a01830 56%, #7c1226 100%);
-    box-shadow: 0 0 0 clamp(3px,.9cqw,7px) #caa45a, 0 0 0 clamp(6px,1.7cqw,12px) #5e1020,
+      radial-gradient(ellipse 62% 60% at 50% 42%, #ac1a32 0%, #8a1226 56%, #660f1e 100%);
+    box-shadow: 0 0 0 clamp(2px,.7cqw,5px) #caa45a, 0 0 0 clamp(5px,1.5cqw,10px) #4e0c1a,
+      0 0 0 clamp(6px,1.8cqw,12px) rgba(202,164,90,.5),
       0 10px 30px rgba(0,0,0,.4), inset 0 0 44px rgba(50,0,10,.45); }
   /* 중앙 그랜드 슬롯 타워 */
   .fd-slottower { position:absolute; transform:translate(-50%,-50%); z-index:2; pointer-events:auto; cursor:pointer; width: clamp(72px,18cqw,140px); transition:transform .12s; }
@@ -1099,7 +1122,7 @@
   @keyframes spkTw { 0%,100%{ opacity:.15; } 50%{ opacity:1; } }
   /* 테이블 게임 피트 브래스 레일 */
   .fd-pitrail { position:absolute; left:50%; top:53%; transform:translate(-50%,-50%); width:52%; height:43%;
-    border: clamp(2px,.7cqw,5px) solid rgba(202,164,90,.4); border-radius:50%;
+    border: clamp(2px,.7cqw,5px) solid rgba(202,164,90,.4); border-radius: clamp(20px,7cqw,56px);
     box-shadow: 0 0 18px rgba(202,164,90,.22), inset 0 0 36px rgba(0,0,0,.18); }
   /* 천장 스포트라이트 (테이블 위 따뜻한 빛) */
   .fd-spot { position:absolute; transform:translate(-50%,-56%); pointer-events:none; mix-blend-mode:screen;
@@ -7903,8 +7926,34 @@ function slotTowerSVG(){
     <path d="M6,25 L13,8 H67 L74,25" fill="none" stroke="#e6c878" stroke-width="2"/>
     <circle cx="40" cy="6" r="4.5" fill="#e21f3a"/><circle class="slamp" cx="40" cy="6" r="2.2" fill="#ffe9a8"/><circle cx="40" cy="6" r="4.5" fill="none" stroke="#e6c878" stroke-width="1.2"/></svg>`;
 }
-// 떠도는 NPC 손님 — 정장 색·피부·머리 (플로어에 생기)
-const NPC_LOOKS=[["#2a3b5c","#e8c9a0","#20141c"],["#5c2438","#f2d8b8","#3a2a1a"],["#1e4a38","#d8b890","#101018"],["#4a3b22","#ecd0b0","#2a1410"]];
+// 뒷벽 금테 아치 알코브 — 몬테카를로 살롱 스타일 (슬롯 뱅크의 배경)
+function wallArchesSVG(n){
+  let a="";
+  for(let i=0;i<n;i++){ const x=i*60;
+    a+=`<g transform="translate(${x},0)">`+
+      `<path d="M8,100 V40 Q8,14 30,14 Q52,14 52,40 V100" fill="rgba(26,3,9,.38)" stroke="#b8944a" stroke-width="2"/>`+
+      `<path d="M13,100 V42 Q13,20 30,20 Q47,20 47,42 V100" fill="none" stroke="rgba(202,164,90,.35)" stroke-width="1"/>`+
+      `<circle cx="30" cy="8" r="2.2" fill="#caa45a"/>`+
+    `</g>`; }
+  return `<svg viewBox="0 0 ${n*60} 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${a}</svg>`;
+}
+// 떠도는 NPC 손님 — 정장/이브닝드레스 믹스 (플로어에 생기)
+const NPC_SVG_DRESS=(dress,skin,hair)=>`<svg viewBox="0 0 34 62" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="17" cy="59" rx="9.5" ry="2.4" fill="rgba(0,0,0,.35)"/>
+  <path d="M11,25 Q17,20 23,25 L27.5,55 Q17,59 6.5,55 Z" fill="${dress}"/>
+  <path d="M11,25 Q17,20 23,25 L24,32 Q17,35 10,32 Z" fill="rgba(255,255,255,.12)"/>
+  <rect x="6" y="25" width="4" height="12.5" rx="2" fill="${dress}"/>
+  <rect x="24" y="25" width="4" height="12.5" rx="2" fill="${dress}"/>
+  <circle cx="17" cy="13.5" r="7" fill="${skin}"/>
+  <path d="M9.5,15 Q9.5,4.5 17,4.5 Q24.5,4.5 24.5,15 Q24.5,21 22,22 Q23.5,12 17,10 Q10.5,12 12,22 Q9.5,21 9.5,15 Z" fill="${hair}"/></svg>`;
+const NPC_LOOKS=[
+  {f:"suit",  c:["#2a3b5c","#e8c9a0","#20141c"]},
+  {f:"dress", c:["#7a1030","#f2d8b8","#3a2a1a"]},
+  {f:"suit",  c:["#1e4a38","#d8b890","#101018"]},
+  {f:"dress", c:["#1c2a5c","#ecd0b0","#101018"]},
+  {f:"suit",  c:["#4a3b22","#ecd0b0","#2a1410"]},
+  {f:"dress", c:["#3c2a10","#e8c9a0","#5c4020"]},
+];
 const NPC_SVG=(suit,skin,hair)=>`<svg viewBox="0 0 34 62" xmlns="http://www.w3.org/2000/svg">
   <ellipse cx="17" cy="59" rx="9.5" ry="2.4" fill="rgba(0,0,0,.35)"/>
   <rect x="11.4" y="42" width="4.8" height="16" rx="2.2" fill="#16161e"/>
@@ -7953,11 +8002,13 @@ function floorDecoHTML(){
   // 테이블 위 천장 광원뿔
   const cones=Object.keys(FLOOR_GAME_POS).map(id=>{ const p=FLOOR_GAME_POS[id];
     return `<div class="fd-cone" style="left:${p.x}%;top:${p.y}%"></div>`; }).join("");
-  // NPC 손님 초기 배치
-  const npcs=NPC_LOOKS.map((c,i)=>{ const [x,y]=NPC_SPOTS[(i*3)%NPC_SPOTS.length];
-    return `<div class="fd-npc" style="left:${x}%;top:${y}%;z-index:${Math.round(y)};transform:translate(-50%,-88%) scale(${floorDepthScale(y).toFixed(3)})">${NPC_SVG(c[0],c[1],c[2])}</div>`; }).join("");
+  // NPC 손님 초기 배치 (정장·드레스 믹스 6명)
+  const npcs=NPC_LOOKS.map((L,i)=>{ const [x,y]=NPC_SPOTS[(i*2)%NPC_SPOTS.length];
+    const svg = L.f==="dress" ? NPC_SVG_DRESS(L.c[0],L.c[1],L.c[2]) : NPC_SVG(L.c[0],L.c[1],L.c[2]);
+    return `<div class="fd-npc" style="left:${x}%;top:${y}%;z-index:${Math.round(y)};transform:translate(-50%,-88%) scale(${floorDepthScale(y).toFixed(3)})">${svg}</div>`; }).join("");
   return `<div id="floor-scene">`+
     `<div class="fd-backwall"></div>`+                      /* 3D 룸 쉘 */
+    `<div class="fd-arches">${wallArchesSVG(10)}</div>`+    /* 금테 아치 알코브 */
     `<div class="fd-wall l"></div><div class="fd-wall r"></div>`+
     `<div class="fd-wallbase l"></div><div class="fd-wallbase r"></div>`+
     `<div class="fd-marble"></div>`+                        /* 원근 대리석 바닥 */
@@ -7980,8 +8031,11 @@ function floorDecoHTML(){
     `<div class="fd-pillar" style="left:4.5%;top:40%;z-index:40"></div><div class="fd-pillar" style="left:95.5%;top:40%;z-index:40"></div>`+
     `<div class="fd-pillar" style="left:4.5%;top:70%;z-index:70"></div><div class="fd-pillar" style="left:95.5%;top:70%;z-index:70"></div>`+
     `<div class="fd-plant" style="left:10.5%;top:12%;z-index:12">${FLOOR_PLANT_SVG}</div><div class="fd-plant" style="left:89.5%;top:12%;z-index:12">${FLOOR_PLANT_SVG}</div>`+
-    `<div class="fd-zone" style="left:50%;top:35%">TABLE GAMES</div>`+
+    `<div class="fd-hangsign" style="left:50%;top:34%"><i class="l"></i><i class="r"></i>TABLE GAMES</div>`+
+    `<div class="fd-slotsign" style="left:91%;top:35.5%;z-index:36">SLOTS</div>`+
+    `<div class="fd-slotsign" style="left:7%;top:50%;z-index:50">SLOTS</div>`+
     npcs +
+    `<div class="fd-grade"></div>`+                         /* 웜 컬러 그레이딩 */
   `</div>`;
 }
 // 깊이 스케일 — 위쪽(안쪽/먼곳)일수록 작게, 아래(입구/가까운곳)일수록 크게
