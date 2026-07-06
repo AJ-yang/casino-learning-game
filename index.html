@@ -2208,6 +2208,7 @@
         <div class="desk-footbtns">
           <button class="desk-foot" data-deskglobal="daily">🎯 데일리 챌린지</button>
           <button class="desk-foot" data-deskglobal="settings">⚙️ 설정</button>
+          <button class="desk-foot" data-deskglobal="tour">🦉 투어 다시 보기</button>
         </div>
       </div>
     </div>
@@ -5910,8 +5911,9 @@ registerGame({
           {v:2,l:"2인<br><small>헤즈업</small>"},{v:3,l:"3인"},{v:4,l:"4인"},{v:5,l:"5인"},{v:6,l:"6인<br><small>풀링</small>"}] },
       { key:"mode", label:"게임 모드", hint:"캐시: 블라인드 고정 · 토너먼트: 블라인드가 점점 상승",
         def:()=>gameMode, options:[{v:"cash",l:"캐시 게임"},{v:"tournament",l:"토너먼트"}] },
-      { key:"diff", label:"AI 난이도", hint:"봇의 실력과 공격성을 조절합니다.",
-        def:()=>difficulty, options:[{v:"easy",l:"쉬움"},{v:"normal",l:"보통"},{v:"hard",l:"어려움"}] },
+      { key:"diff", label:"AI 난이도", hint:"봇의 실력과 공격성을 조절합니다. 쉬움은 턴 타이머 없이 코칭을 읽으며 배울 수 있어요.",
+        def:()=> (stats.handsPlayed||0)<5 ? "easy" : difficulty,   // 처음 5핸드까지는 배우는 모드가 기본
+        options:[{v:"easy",l:"쉬움"},{v:"normal",l:"보통"},{v:"hard",l:"어려움"}] },
     ],
     start(v){
       if(!holdemBuyIn()){ toast("크레딧이 부족해요 — 충전 후 다시 시작하세요"); showFloor(); openCredits(); return; }
@@ -7368,6 +7370,8 @@ function bcRender(){
   } else if(revealing){ const next=BC.revealOrder[BC.revealN];
     banner.textContent = next ? `🤏 ${next.s==="p"?"플레이어":"뱅커"} 카드를 탭하면 저절로, 드래그하면 직접 까져요` : "공개 중…";
     banner.style.color="#ffe082";
+  } else if(BC.phase==="bet" && bcTotalBets()===0){
+    banner.textContent="👇 베팅판의 플레이어·뱅커를 눌러 칩을 올리세요"; banner.style.color="#cfe0ea";
   } else banner.textContent="";
   bcCoach(); bcRenderControls();
 }
@@ -7377,7 +7381,7 @@ function bcCoach(){
   if(BC.bets.tie>0){ el.className="warn"; el.innerHTML="⚠️ <b>타이</b>는 하우스 엣지 약 14% — 장기적으로 가장 불리해요."; }
   else if(BC.bets.banker>0 && BC.bets.player===0){ el.className="good"; el.innerHTML="🎓 <b>뱅커</b>는 하우스 엣지 1.06%로 가장 유리한 베팅이에요 (커미션 5% 포함)."; }
   else if(BC.bets.player>0){ el.className=""; el.innerHTML="🎓 플레이어 엣지 1.24%. 뱅커(1.06%)가 살짝 더 유리해요."; }
-  else { el.className=""; el.innerHTML="🎓 뱅커(1.06%) ＜ 플레이어(1.24%) ＜ 타이(14%) — 엣지가 낮을수록 유리."; }
+  else { el.className=""; el.innerHTML="🎓 어디에 걸지 고르세요 — 통계적으로 <b>뱅커</b>가 가장 유리하고, 타이는 피하는 게 좋아요."; }
 }
 function bcRenderControls(){
   const c=document.getElementById("bc-coin-amt"); if(c) c.textContent=stats.coins||0;
@@ -7500,7 +7504,8 @@ function closeDesk(){ document.getElementById("desk-overlay").classList.add("hid
 document.getElementById("desk-close").onclick=closeDesk;
 document.getElementById("desk-overlay").onclick=(e)=>{ if(e.target.id==="desk-overlay") closeDesk(); };
 document.querySelectorAll(".desk-footer [data-deskglobal]").forEach(b=>b.onclick=()=>{ const a=b.dataset.deskglobal; closeDesk();
-  if(a==="daily") openDaily(); else if(a==="settings") openSettings(); });
+  if(a==="daily") openDaily(); else if(a==="settings") openSettings();
+  else if(a==="tour"){ try{ localStorage.removeItem("casinoTourDone"); }catch(e){} _tourIdx=-1; showFloor(); } });
 
 function enterGame(id){
   const g=GAMES.find(x=>x.id===id);
