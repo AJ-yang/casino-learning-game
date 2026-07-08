@@ -822,6 +822,52 @@
   @keyframes enterPulse { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.04); } }
   .ent-hint { font-size: clamp(10.5px,2.8vw,12px); color:#9a8fc0; margin-top:10px; }
 
+  /* ===== 빈털터리 — 퇴장 연출 + 입구 경비 ===== */
+  #kickout-overlay {
+    position:fixed; inset:0; z-index:60; background:rgba(6,3,14,.94);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+    transition:opacity .6s; }
+  #kickout-overlay.hidden { display:none; }
+  #kickout-overlay.p3 { opacity:0; }
+  #ko-stage { position:relative; width:min(560px,96vw); height:min(340px,72vh); }
+  #ko-bubble { position:absolute; top:6%; left:50%; transform:translateX(-50%) scale(.7);
+    width:min(380px,88%); background:#fdf7ff; color:#241040; font-weight:800;
+    font-size: clamp(13px,3.6vw,16px); line-height:1.5; padding:13px 16px; border-radius:16px;
+    text-align:center; opacity:0; transition:opacity .3s, transform .3s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 10px 34px rgba(0,0,0,.55); }
+  #ko-bubble::after { content:""; position:absolute; bottom:-9px; left:50%; transform:translateX(-50%);
+    border:10px solid transparent; border-top-color:#fdf7ff; border-bottom:none; }
+  #kickout-overlay.p1 #ko-bubble { opacity:1; transform:translateX(-50%) scale(1); }
+  #ko-door { position:absolute; left:4%; bottom:20%; font-size: clamp(42px,12vw,60px); line-height:1;
+    opacity:0; transition:opacity .4s; filter:drop-shadow(0 0 16px rgba(245,215,110,.4)); }
+  #kickout-overlay.p2 #ko-door { opacity:.95; }
+  #ko-pair { position:absolute; bottom:18%; left:50%; transform:translateX(-50%);
+    font-size: clamp(46px,13vw,66px); line-height:1; white-space:nowrap;
+    transition:left 1.7s cubic-bezier(.45,0,.55,1); }
+  #kickout-overlay.p2 #ko-pair { left:17%; }
+  #ko-guard { display:inline-block; transform:translateX(70vw); transition:transform .55s cubic-bezier(.22,1,.36,1); }
+  #kickout-overlay.p1 #ko-guard { transform:translateX(0); }
+  #ko-player { display:inline-block; }
+  #kickout-overlay.p2 #ko-player { animation: ko-wobble .45s linear infinite; }
+  @keyframes ko-wobble { 0%,100%{ transform:rotate(-9deg); } 50%{ transform:rotate(9deg) translateY(-3px); } }
+  #ko-skip { position:absolute; bottom:2%; left:50%; transform:translateX(-50%);
+    color:#8f7fb9; font-size:12px; font-weight:600; }
+  #ent-guard { position:fixed; left:50%; bottom:max(14px, env(safe-area-inset-bottom));
+    transform:translateX(-50%); width:min(340px,94%); padding:14px; border-radius:16px;
+    background:rgba(24,12,46,.94); border:1px solid rgba(245,215,110,.4); z-index:10;
+    box-shadow:0 12px 40px rgba(0,0,0,.6); animation: eg-pop .3s ease-out; text-align:center; }
+  #ent-guard.hidden, #eg-actions.hidden { display:none; }
+  #ent-guard.shake { animation: eg-shake .4s; }
+  .eg-guard { font-size:44px; line-height:1; }
+  .eg-bubble { margin-top:8px; font-size: clamp(12px,3.4vw,14px); color:#f3ecff; font-weight:700; line-height:1.5; }
+  #eg-actions { display:flex; gap:8px; margin-top:12px; justify-content:center; flex-wrap:wrap; }
+  #eg-actions button { padding:10px 14px; border-radius:12px; border:none; font-weight:800; cursor:pointer; font-size:13px; }
+  #eg-buy { background:linear-gradient(135deg,#f5d76e,#e3a13b); color:#3a2405; }
+  #eg-tomorrow { background:#3a2f55; color:#cbbdf0; }
+  @keyframes eg-pop { from{ opacity:0; transform:translate(-50%,10px); } to{ opacity:1; transform:translate(-50%,0); } }
+  @keyframes eg-shake { 0%,100%{ transform:translate(-50%,0); } 25%{ transform:translate(calc(-50% - 6px),0); } 75%{ transform:translate(calc(-50% + 6px),0); } }
+
   /* ===== 게임 입장 전 설정 화면 ===== */
   #setup-overlay {
     position:fixed; inset:0; z-index:48; display:flex; align-items:center; justify-content:center;
@@ -2495,7 +2541,25 @@
       </div>
       <div class="ent-coin">💵 <b id="ent-credit">1,000</b> 크레딧 · 🏅 <b id="ent-coin">0</b> 메달</div>
       <button id="enter-btn">🚪 입장하기</button>
+      <div id="ent-guard" class="hidden">
+        <div class="eg-guard">💂</div>
+        <div class="eg-bubble" id="eg-text"></div>
+        <div id="eg-actions">
+          <button id="eg-buy">🏅 메달로 크레딧 구매</button>
+          <button id="eg-tomorrow">🌙 내일 다시 올게요</button>
+        </div>
+      </div>
       <div class="ent-hint">문을 열고 들어가 카지노 플로어를 자유롭게 돌아다녀 보세요</div>
+    </div>
+  </div>
+
+  <!-- 빈털터리 퇴장 연출 (경비가 모시고 나감) -->
+  <div id="kickout-overlay" class="hidden">
+    <div id="ko-stage">
+      <div id="ko-bubble"></div>
+      <div id="ko-door">🚪</div>
+      <div id="ko-pair"><span id="ko-player">🚶</span><span id="ko-guard">💂</span></div>
+      <div id="ko-skip">탭하여 건너뛰기</div>
     </div>
   </div>
 
@@ -3184,7 +3248,7 @@ function holdemCashOut(){
 function leaveHoldemToFloor(){ holdemCashOut(); _gameStarted=false; showFloor(); }
 function resetBankroll(){
   holdemCashOut();                     // 끝난 판의 칩을 크레딧으로 회수
-  if(!holdemBuyIn()){ showFloor(); openCredits(); return; }  // 새 바이인 (크레딧 부족 시 구매)
+  if(!holdemBuyIn()){ if(maybeKickOut()) return; showFloor(); openCredits(); return; }  // 새 바이인 (0이면 퇴장, 부족 시 구매)
   stats.lifetimeBuyIn += _holdemBuyin; // 통계: 새 바이인 누적(순손익용)
   saveStats();
   handCount=0;                         // 토너먼트 시계 초기화
@@ -3358,10 +3422,77 @@ function renderCredits(){
   });
 }
 function openCredits(){ pauseTurnTimer(); ensureDailyCredits(); renderCredits(); document.getElementById("credits-overlay").classList.remove("hidden"); }
-function closeCredits(){ document.getElementById("credits-overlay").classList.add("hidden"); }
+function closeCredits(){ document.getElementById("credits-overlay").classList.add("hidden"); egRecheck(); }
 document.getElementById("credits-close").onclick=closeCredits;
 document.getElementById("credits-overlay").onclick=(e)=>{ if(e.target.id==="credits-overlay") closeCredits(); };
 document.getElementById("floor-credit-chip").onclick=openCredits;
+
+// ===== 빈털터리 처리 — 퇴장 연출 + 입구 경비 =====
+let _kicking=false, _koT=[];
+// 크레딧 0이면 퇴장 연출 시작. 입구에 있거나 구매창이 열려 있으면 보류.
+function maybeKickOut(){
+  const entOpen=!document.getElementById("entrance-overlay").classList.contains("hidden");
+  const buying=!document.getElementById("credits-overlay").classList.contains("hidden");
+  if(_kicking || entOpen || buying || (stats.credits||0)>0) return false;
+  kickOutBroke(); return true;
+}
+function kickOutBroke(){
+  if(_kicking) return; _kicking=true;
+  pauseTurnTimer();
+  const ov=document.getElementById("kickout-overlay");
+  ov.classList.remove("hidden","p1","p2","p3"); void ov.offsetWidth;
+  const bub=document.getElementById("ko-bubble");
+  bub.textContent="손님, 크레딧이 다 떨어지셨네요? 규정상 모시고 나가겠습니다. 💂";
+  sfx("fold");
+  _koT=[ setTimeout(()=>ov.classList.add("p1"), 60),
+         setTimeout(()=>{ ov.classList.add("p2"); bub.textContent="이쪽입니다, 손님. 내일 오시면 무료 크레딧이 준비돼 있습니다 🌙"; }, 1900),
+         setTimeout(()=>ov.classList.add("p3"), 3900),
+         setTimeout(koFinish, 4500) ];
+}
+function koFinish(){   // 연출 종료(또는 탭 스킵) → 게임 정리 후 입구로
+  if(!_kicking) return; _kicking=false;
+  _koT.forEach(clearTimeout); _koT=[];
+  ["bj-overlay","bj-info-overlay","rl-overlay","rl-info-overlay","vp-overlay","vp-info-overlay",
+   "sl-overlay","sl-info-overlay","bc-overlay","bc-info-overlay","setup-overlay","desk-overlay","credits-overlay"]
+    .forEach(id=>{ const e=document.getElementById(id); if(e) e.classList.add("hidden"); });
+  document.getElementById("kickout-overlay").classList.add("hidden");
+  _gameStarted=false;
+  showEntrance();
+  toast("🚪 크레딧이 다 떨어져 카지노에서 쫓겨났어요…");
+}
+document.getElementById("kickout-overlay").onclick=koFinish;
+
+// 입구 경비 — 크레딧 0이면 입장 차단 (enterCasino에서 호출)
+const EG_LINES=[
+  "⛔ 잠깐! 크레딧이 없는 손님은 입장하실 수 없습니다.",
+  "안 됩니다, 손님. 규정입니다. 💂",
+  "🏅 메달로 충전하시거나, 내일 무료 크레딧을 받아 오세요.",
+];
+let _egN=0;
+function showEntGuard(){
+  const g=document.getElementById("ent-guard");
+  if(!g.classList.contains("hidden")) _egN=Math.min(_egN+1, EG_LINES.length-1);
+  g.classList.remove("hidden");
+  document.getElementById("eg-text").textContent=EG_LINES[_egN];
+  document.getElementById("eg-actions").classList.remove("hidden");
+  g.classList.remove("shake"); void g.offsetWidth; g.classList.add("shake");
+  sfx("fold");
+}
+function hideEntGuard(){ document.getElementById("ent-guard").classList.add("hidden"); _egN=0; }
+function egRecheck(){   // 구매창을 닫을 때 — 충전됐으면 경비가 비켜줌
+  const g=document.getElementById("ent-guard");
+  if(g.classList.contains("hidden")) return;
+  if((stats.credits||0)>0){
+    document.getElementById("eg-text").textContent="💂 충전 확인했습니다. 즐거운 시간 되세요!";
+    document.getElementById("eg-actions").classList.add("hidden");
+    setTimeout(hideEntGuard, 1500);
+  }
+}
+document.getElementById("eg-buy").onclick=openCredits;
+document.getElementById("eg-tomorrow").onclick=()=>{
+  document.getElementById("eg-text").textContent="💂 내일 오시면 무료 크레딧 1,000이 준비돼 있습니다. 좋은 밤 되세요 🌙";
+  document.getElementById("eg-actions").classList.add("hidden");
+};
 
 // ---------- 메달 · 일일 챌린지 ----------
 // 챌린지 풀 — 매일 시드로 3개 선택. type별로 핸드 결과(commitHand)에서 진행 측정.
@@ -4579,7 +4710,7 @@ function startTurnTimer(){
 }
 // 모달이 열려 있는 동안엔 타이머를 멈춰 통계/기록을 보다가 자동 폴드되지 않게 함
 function anyModalOpen(){
-  return ["stats-overlay","settings-overlay","result-overlay","history-overlay","replay-overlay","daily-overlay","shop-overlay","help-overlay","trainer-overlay","setup-overlay","bj-overlay","bj-info-overlay","rl-overlay","rl-info-overlay","vp-overlay","vp-info-overlay","sl-overlay","sl-info-overlay","bc-overlay","bc-info-overlay","desk-overlay","credits-overlay","confirm-overlay"]
+  return ["stats-overlay","settings-overlay","result-overlay","history-overlay","replay-overlay","daily-overlay","shop-overlay","help-overlay","trainer-overlay","setup-overlay","bj-overlay","bj-info-overlay","rl-overlay","rl-info-overlay","vp-overlay","vp-info-overlay","sl-overlay","sl-info-overlay","bc-overlay","bc-info-overlay","desk-overlay","credits-overlay","confirm-overlay","kickout-overlay"]
     .some(id=>{ const e=document.getElementById(id); return e && !e.classList.contains("hidden"); });
 }
 function pauseTurnTimer(){
@@ -5819,6 +5950,7 @@ function showEntrance(){
   const ec=document.getElementById("ent-coin"); if(ec) ec.textContent=stats.coins||0;
   updateCreditDisplay();
   const ent=document.getElementById("entrance-overlay");
+  if((stats.credits||0)>0) hideEntGuard();   // 충전된 상태면 경비 치우기
   ent.classList.remove("opening"); ent.classList.remove("hidden");
 }
 function showFloor(){
@@ -5939,7 +6071,7 @@ registerGame({
         options:[{v:"easy",l:"쉬움"},{v:"normal",l:"보통"},{v:"hard",l:"어려움"}] },
     ],
     start(v){
-      if(!holdemBuyIn()){ toast("크레딧이 부족해요 — 충전 후 다시 시작하세요"); showFloor(); openCredits(); return; }
+      if(!holdemBuyIn()){ if(maybeKickOut()) return; toast("크레딧이 부족해요 — 충전 후 다시 시작하세요"); showFloor(); openCredits(); return; }
       setDifficulty(v.diff);
       tableSize=v.size; gameMode=v.mode; handCount=0;
       stats.lifetimeBuyIn += _holdemBuyin; saveStats();
@@ -6264,6 +6396,7 @@ function bjRenderControls(){
         `<button class="bj-act ghost" data-bjact="clear" ${BJ.bet?"":"disabled"} style="min-width:auto;padding:9px 16px;font-size:13px">지우기</button></div>`+
       `<button class="bj-act deal" data-bjact="deal" ${BJ.bet>=5?"":"disabled"}>🂡 딜 (${BJ.bet})</button>`+
       (BJ.bankroll<5?`<div class="bj-bankrupt">크레딧이 부족해요 — <button class="cr-buy" onclick="openCredits()" style="padding:5px 12px">💵 크레딧 구매</button></div>`:"");
+    if((stats.credits||0)===0) setTimeout(maybeKickOut, 1300);   // 빈털터리 → 퇴장 연출
   } else if(BJ.phase==="player"){
     const h=bjCurrent();
     const canD=h.cards.length===2 && BJ.bankroll>=h.bet;
@@ -6411,7 +6544,7 @@ function rlTotalWager(){ return RL.bets.reduce((s,b)=>s+b.amount,0); }
 function rlPlace(type, val){
   if(RL.spinning) return;
   const amt=RL.chip;
-  if(rlTotalWager()+amt>RL.bankroll){ toast("잔액이 부족해요"); return; }
+  if(rlTotalWager()+amt>RL.bankroll){ if(maybeKickOut()) return; toast("잔액이 부족해요"); return; }
   const key=rlBetKey(type,val);
   let b=RL.bets.find(x=>x.key===key);
   if(b) b.amount+=amt; else RL.bets.push({key, type, val:(val??null), amount:amt});
@@ -6496,6 +6629,7 @@ function rlSettle(n, wager){
     coinBurst(wrap, Math.min(26, 8+Math.round(net/20)));
     if(net>=wager*5) coinBurst(document.getElementById("rl-board"), 14);
   } else if(net<0) rlSndLose();
+  if((stats.credits||0)===0) setTimeout(maybeKickOut, 1600);   // 빈털터리 → 퇴장 연출
 }
 function rlAwardCoin(nc, why){ stats.coins=(stats.coins||0)+nc; stats.coinsFromPlay=(stats.coinsFromPlay||0)+nc;
   saveStats(); updateCoinDisplay(); pulseCoin();
@@ -6758,7 +6892,7 @@ function vpStartGame(){ VP.phase="bet"; VP.hand=[]; VP.held=[false,false,false,f
 function vpDeal(){
   if(VP.phase==="done"){ VP.phase="bet"; }
   if(VP.phase!=="bet") return;
-  if(VP.credits < VP.denom){ toast("크레딧이 부족해요"); openCredits(); return; }
+  if(VP.credits < VP.denom){ if(maybeKickOut()) return; toast("크레딧이 부족해요"); openCredits(); return; }
   VP.bet=Math.max(1, Math.min(VP.bet, Math.floor(VP.credits/VP.denom)));   // 감당 가능한 코인 수로 조정
   VP.credits-=vpWager(); VP.stats.hands++;
   vpShuffle();
@@ -6900,6 +7034,7 @@ function vpRenderControls(){
       `<div class="vp-total">총 베팅 <b>💵${vpWager().toLocaleString()}</b></div>`+
       `<button class="vp-act deal" data-vpact="deal">🃏 딜</button>`+
       (VP.credits<VP.denom?`<div class="bj-bankrupt">크레딧이 부족해요 — <button class="cr-buy" onclick="openCredits()" style="padding:5px 12px">💵 크레딧 구매</button></div>`:"");
+    if((stats.credits||0)===0) setTimeout(maybeKickOut, 1300);   // 빈털터리 → 퇴장 연출
   }
   bar.querySelectorAll("[data-vpact]").forEach(b=>b.onclick=()=>{
     const a=b.dataset.vpact;
@@ -7074,7 +7209,7 @@ function slSpinReel(win, mc, target, dur, easing){
 }
 function slSpin(){
   if(SL.spinning) return; const bet=SL.bet, mc=SL.machine;
-  if((stats.credits||0) < bet){ toast("크레딧이 부족해요"); openCredits(); return; }
+  if((stats.credits||0) < bet){ if(maybeKickOut()) return; toast("크레딧이 부족해요"); openCredits(); return; }
   SL.spinning=true; spendCredits(bet); SL.stats.spins++; SL.stats.wagered+=bet; SL.lastWin=0; SL.lastLine="";
   const final=[slPick(mc),slPick(mc),slPick(mc)]; slSndSpin();
   slRenderControls();
@@ -7114,6 +7249,7 @@ function slSettle(reels, bet){
   SL.spinning=false; checkGraduations(); slSave(); slRender();
   // 당첨 시 잔고 카운트업
   if(r.win>0){ const ce=document.getElementById("sl-credit"); if(ce) countUp(ce, stats.credits||0, {from:_credBefore, dur:900}); }
+  if((stats.credits||0)===0) setTimeout(maybeKickOut, 1600);   // 빈털터리 → 퇴장 연출
 }
 function slRenderReels(){ const els=document.querySelectorAll("#sl-reels .sl-reel");
   els.forEach((win,i)=>{ const cellH=win.clientHeight||90;
@@ -7152,7 +7288,8 @@ function slShow(){ hideLobby(); const m=SL.machine;
   ["sl-bulbs-top","sl-bulbs-bot"].forEach(id=>{ const w=document.getElementById(id); if(!w) return;
     if(w.children.length!==14){ w.innerHTML=""; for(let i=0;i<14;i++){ const b=document.createElement("div"); b.className="sl-bulb"; b.style.animationDelay=(i*0.08).toFixed(2)+"s"; w.appendChild(b); } } });
   const cab=document.getElementById("sl-machine"); if(cab){ cab.style.background=`linear-gradient(180deg,${m.cab[0]},${m.cab[1]})`; }
-  ov.classList.remove("hidden"); slRender(); slRenderReels(); }
+  ov.classList.remove("hidden"); slRender(); slRenderReels();
+  if((stats.credits||0)===0) setTimeout(maybeKickOut, 1300); }   // 빈털터리로 입장 → 퇴장 연출
 function slOpen(mi){ pauseTurnTimer(); SL.mi=((mi|0)%SLOT_MACHINES.length+SLOT_MACHINES.length)%SLOT_MACHINES.length; SL.machine=SLOT_MACHINES[SL.mi];
   SL.reels=SL.machine.symbols.slice(0,3).map(x=>x.s); SL.spinning=false; SL.lastWin=0; SL.lastLine=""; SL.started=true; slSave(); slShow(); }
 function slOpenInfo(){
@@ -7232,7 +7369,7 @@ function bcTotalBets(){ return Object.values(BC.bets).reduce((a,b)=>a+b,0); }
 function bcSamePair(hand){ return hand.length>=2 && hand[0].r===hand[1].r; }
 
 function bcPlace(type){ if(BC.phase!=="bet") return; const amt=BC.chip;
-  if(bcTotalBets()+amt>BC._credits){ toast("크레딧이 부족해요"); return; }
+  if(bcTotalBets()+amt>BC._credits){ if(maybeKickOut()) return; toast("크레딧이 부족해요"); return; }
   BC.bets[type]+=amt; sfx("chip"); bcRender(); }
 function bcClear(){ if(BC.phase!=="bet") return; BC.bets={player:0,banker:0,tie:0,ppair:0,bpair:0}; bcRender(); }
 
@@ -7240,7 +7377,7 @@ function bcDeal(){
   if(BC.phase==="done"){ bcResetRound(); }
   if(BC.phase!=="bet") return;
   const wager=bcTotalBets(); if(wager<5){ toast("베팅을 올리세요"); return; }
-  if(wager>BC._credits){ toast("크레딧이 부족해요"); openCredits(); return; }
+  if(wager>BC._credits){ if(maybeKickOut()) return; toast("크레딧이 부족해요"); openCredits(); return; }
   spendCredits(wager); BC.stats.rounds++; BC.stats.wagered+=wager;
   BC.player=[bcDrawCard(),bcDrawCard()]; BC.banker=[bcDrawCard(),bcDrawCard()];
   let pt=bcTotal(BC.player), bt=bcTotal(BC.banker);
@@ -7334,6 +7471,7 @@ function bcSettle(){
       countUp(document.getElementById("bc-netval"), net, {prefix:"+", dur:850}); winPunch(banner); }
   } else if(net<0){ sfx("fold"); }
   else sfx("check");
+  if((stats.credits||0)===0) setTimeout(maybeKickOut, 1600);   // 빈털터리 → 퇴장 연출
 }
 function bcResetRound(){ BC.phase="bet"; BC.player=[]; BC.banker=[]; BC.result=null; BC._lastNet=null; BC.revealOrder=[]; BC.revealN=0; BC._justRev=null; bcClear(); }
 function bcAward(n, why){ stats.coins=(stats.coins||0)+n; stats.coinsFromPlay=(stats.coinsFromPlay||0)+n;
@@ -8195,6 +8333,8 @@ let _entering=false;
 function enterCasino(){
   const ov=document.getElementById("entrance-overlay");
   if(!ov || ov.classList.contains("hidden") || _entering) return;
+  if((stats.credits||0)===0){ showEntGuard(); return; }   // 빈털터리 → 경비 차단
+  hideEntGuard();
   _entering=true;
   ov.classList.add("opening");
   setTimeout(()=>{ ov.classList.remove("opening"); _entering=false; showFloor(); }, 1180);
