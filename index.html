@@ -1260,19 +1260,19 @@
 
   /* ===== 학습 UI ===== */
   /* 첫 방문 웰컴 투어 (부엉이 가이드) */
-  #floor-guide { position:fixed; left:0; right:0; margin:0 auto; bottom: clamp(46px,9vh,76px); z-index:49;
+  #floor-guide, #game-guide { position:fixed; left:0; right:0; margin:0 auto; bottom: clamp(46px,9vh,76px); z-index:49;
     width:min(430px, 92vw); padding:14px 16px 12px; border-radius:16px;
     background:linear-gradient(180deg, rgba(20,36,26,.97), rgba(10,22,15,.97));
     border:1.5px solid rgba(245,215,110,.5); box-shadow:0 12px 36px rgba(0,0,0,.6);
     animation: statsPop .25s cubic-bezier(.2,.8,.3,1.1) both; }
-  #floor-guide .fg-owl { position:absolute; top:-22px; left:14px; font-size:30px;
+  #floor-guide .fg-owl, #game-guide .fg-owl { position:absolute; top:-22px; left:14px; font-size:30px;
     filter:drop-shadow(0 3px 5px rgba(0,0,0,.5)); animation: petBob 2.4s ease-in-out infinite; }
-  #floor-guide .fg-body { font-size: clamp(12.5px,3.3vw,14px); color:#e8f2ea; line-height:1.6; text-align:left; }
-  #floor-guide .fg-body b { color:#ffe082; }
-  #floor-guide .fg-btns { display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
-  #floor-guide .fg-skip { font-size:12px; font-weight:600; color:#9ab5a2; padding:8px 12px; border-radius:10px;
+  #floor-guide .fg-body, #game-guide .fg-body { font-size: clamp(12.5px,3.3vw,14px); color:#e8f2ea; line-height:1.6; text-align:left; }
+  #floor-guide .fg-body b, #game-guide .fg-body b { color:#ffe082; }
+  #floor-guide .fg-btns, #game-guide .fg-btns { display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
+  #floor-guide .fg-skip, #game-guide .fg-skip { font-size:12px; font-weight:600; color:#9ab5a2; padding:8px 12px; border-radius:10px;
     background:transparent; border:1px solid rgba(255,255,255,.15); box-shadow:none; }
-  #floor-guide .fg-next { font-size:13px; font-weight:800; color:#04241d; padding:8px 18px; border-radius:10px;
+  #floor-guide .fg-next, #game-guide .fg-next { font-size:13px; font-weight:800; color:#04241d; padding:8px 18px; border-radius:10px;
     background:linear-gradient(135deg,#3ddc97,#0fa36b); box-shadow:0 4px 12px rgba(20,160,107,.4); }
   /* 코치 이유 설명 */
   .coach-why { display:inline-block; margin-top:3px; font-size:.88em; font-weight:500; color:#b8ceda; line-height:1.45; }
@@ -5883,6 +5883,64 @@ function renderTour(){
   g.querySelector(".fg-next").onclick=()=>{ if(last) endTour(); else { _tourIdx++; renderTour(); } };
 }
 
+// ---------- 게임별 첫 입장 온보딩 — 부엉이 가이드 (건너뛰기 가능) ----------
+const GAME_GUIDES={
+  holdem:[
+    `🂠 <b>텍사스 홀덤</b> — 내 카드 2장과 공용 카드 5장으로 <b>최고의 5장 조합</b>을 만들어 봇들과 겨뤄요.`,
+    `차례가 오면 아래 버튼으로 <b>폴드(포기) · 콜(따라가기) · 레이즈(올리기)</b>를 선택해요.<br>이길 것 같은 판에만 칩을 넣는 게 핵심!`,
+    `막히면 <b>🎓 코치 추천</b>을 그대로 따라 해보세요 — 잘 따르면 🏅 메달을 받아요.<br>족보·전략은 <b>❓ 배우기</b>에 다 있어요.`,
+  ],
+  blackjack:[
+    `🂡 <b>블랙잭</b> — 딜러보다 <b>21에 가깝게</b> 만들면 승리! 단, 21을 넘으면(버스트) 바로 패배예요.`,
+    `아래 <b>칩을 눌러 베팅</b>하고 딜!<br>그다음 <b>히트(한 장 더) / 스탠드(멈춤) / 더블 / 스플릿</b>을 선택해요.`,
+    `언제 치고 멈출지는 수학적 정답(<b>기본 전략</b>)이 있어요 — 💡 코치를 따라 하면 🏅 메달!<br>전략표는 <b>❓ 배우기</b>에서.`,
+  ],
+  roulette:[
+    `🔴 <b>룰렛</b> — 공이 어느 숫자에 떨어질지 예측해요.<br>숫자 하나(×36)부터 빨강/검정(×2)까지 베팅이 다양해요.`,
+    `<b>칩 금액을 고르고 보드를 탭</b>해 베팅한 뒤 <b>스핀</b>!<br>여러 곳에 나눠 걸 수도 있어요.`,
+    `어디에 걸든 기대값은 똑같이 -2.7%(<b>하우스 엣지</b>)예요 — 왜 그런지 <b>❓ 배우기</b>에서 확인해 보세요.`,
+  ],
+  videopoker:[
+    `🃏 <b>비디오 포커</b> — 5장을 받고 <b>남길 카드만 홀드</b>, 나머지를 교체해 족보를 완성해요. 잭 페어 이상이면 배당!`,
+    `<b>베팅 → 딜 → 카드를 탭해 홀드 → 드로우</b> 순서예요.<br>어떤 카드를 남기느냐가 실력의 전부!`,
+    `최적의 홀드에는 수학적 정답(<b>EV</b>)이 있어요 — 💡 코치 판단을 따라 하면 🏅 메달이 쌓여요.`,
+  ],
+  baccarat:[
+    `🀄 <b>바카라</b> — 플레이어와 뱅커 중 <b>9에 더 가까운 쪽</b>을 맞히면 승리! 카드는 규칙대로 자동 진행돼요.`,
+    `<b>칩을 골라 플레이어 / 뱅커 / 타이에 베팅</b>하고 딜!<br>카드를 직접 <b>쪼며(드래그)</b> 여는 재미도 있어요.`,
+    `통계적으로 <b>뱅커가 아주 살짝 유리</b>해요 — 그래서 수수료 5%가 붙죠. 왜 그런지 <b>❓ 배우기</b>에서!`,
+  ],
+  slots:[
+    `🎰 <b>슬롯머신</b> — 릴 3개가 <b>같은 그림</b>이면 배당! 머신마다 그림·배당·성격이 달라요.`,
+    `<b>베팅 금액을 조절</b>하고 스핀! 배당표는 화면에서 바로 볼 수 있어요.`,
+    `슬롯은 순수 운 게임이에요 — <b>RTP(환수율)와 변동성</b>이 뭔지 직접 체험해 보세요. 오래 돌리면 왜 잃는지 보여요!`,
+  ],
+};
+let _gg={id:null, idx:0};
+function maybeGameGuide(id){
+  if(!GAME_GUIDES[id]) return;
+  if(stats.guided && stats.guided[id]) return;                       // 이미 봤으면 스킵
+  if(_gg.id===id && document.getElementById("game-guide")) return;   // 표시 중이면 유지
+  _gg={id, idx:0}; renderGameGuide();
+}
+function endGameGuide(){
+  if(_gg.id){ stats.guided=stats.guided||{}; stats.guided[_gg.id]=1; saveStats(); }
+  _gg={id:null, idx:0};
+  dropGameGuide();
+}
+function dropGameGuide(){ const g=document.getElementById("game-guide"); if(g) g.remove(); }   // 중도 이탈 시 제거(미완료면 다음 입장에 다시)
+function renderGameGuide(){
+  const steps=GAME_GUIDES[_gg.id]; if(!steps) return;
+  let g=document.getElementById("game-guide");
+  if(!g){ g=document.createElement("div"); g.id="game-guide"; document.body.appendChild(g); }
+  const last=_gg.idx>=steps.length-1;
+  g.innerHTML=`<div class="fg-owl">🦉</div><div class="fg-body">${steps[_gg.idx]}</div>`+
+    `<div class="fg-btns"><button class="fg-skip">건너뛰기</button>`+
+    `<button class="fg-next">${last?"시작하기 ▶":`다음 (${_gg.idx+1}/${steps.length})`}</button></div>`;
+  g.querySelector(".fg-skip").onclick=endGameGuide;
+  g.querySelector(".fg-next").onclick=()=>{ if(last) endGameGuide(); else { _gg.idx++; renderGameGuide(); } };
+}
+
 // ---------- 학습 졸업 시스템 — 게임별 기본기를 익히면 졸업장 + 메달 ----------
 const GRADS={
   blackjack:{ icon:"🂡", name:"블랙잭", req:"베이직 전략 판단 20회 · 정확도 75% 이상",
@@ -5951,6 +6009,7 @@ function showEntrance(){
   updateCreditDisplay();
   const ent=document.getElementById("entrance-overlay");
   if((stats.credits||0)>0) hideEntGuard();   // 충전된 상태면 경비 치우기
+  dropGameGuide();
   ent.classList.remove("opening"); ent.classList.remove("hidden");
 }
 function showFloor(){
@@ -5959,6 +6018,7 @@ function showFloor(){
   document.getElementById("entrance-overlay").classList.add("hidden");
   updateCoinDisplay(); updateCreditDisplay();
   document.getElementById("start-overlay").classList.remove("hidden");
+  dropGameGuide();
   const ht=document.querySelector(".floor-htitle"); if(ht) ht.textContent = stats.master ? "👑 카지노 플로어" : "🎰 카지노 플로어";
   renderFloor();
   maybeStartTour();   // 첫 방문이면 부엉이 웰컴 투어
@@ -6080,6 +6140,7 @@ registerGame({
       hideLobby();
       log(`텍사스 홀덤 시작: ${tableSize}인 · ${gameMode==="tournament"?"토너먼트":"캐시"} · 크레딧 ${_holdemBuyin} 바이인`);
       startHand();
+      maybeGameGuide("holdem");
     },
   },
 });
@@ -6467,7 +6528,7 @@ registerGame({
     },
   },
 });
-function bjShow(){ hideLobby(); document.getElementById("bj-overlay").classList.remove("hidden"); bjRender(); }
+function bjShow(){ hideLobby(); document.getElementById("bj-overlay").classList.remove("hidden"); bjRender(); maybeGameGuide("blackjack"); }
 function bjHideToFloor(){ document.getElementById("bj-overlay").classList.add("hidden"); showFloor(); }
 function bjRulesHTML(){
   return `<div class="bj-tip"><b>블랙잭의 목표</b> — 21을 넘지 않으면서 딜러보다 높은 합을 만드는 것. 그림카드=10, A=1 또는 11. 처음 2장이 21이면 <b>블랙잭(3:2 배당)</b>.</div>`+
@@ -6736,7 +6797,7 @@ registerGame({
     },
   },
 });
-function rlShow(){ hideLobby(); document.getElementById("rl-overlay").classList.remove("hidden");
+function rlShow(){ hideLobby(); maybeGameGuide("roulette"); document.getElementById("rl-overlay").classList.remove("hidden");
   const w=document.getElementById("rl-wheel"); if(w && !w.innerHTML) w.innerHTML=rlBuildWheel();
   // 구슬 궤도 주입 (휠 위, 결과 배지 아래)
   const wrap=document.getElementById("rl-wheelwrap");
@@ -7066,7 +7127,7 @@ registerGame({
     },
   },
 });
-function vpShow(){ hideLobby(); document.getElementById("vp-overlay").classList.remove("hidden"); vpRender(); }
+function vpShow(){ hideLobby(); document.getElementById("vp-overlay").classList.remove("hidden"); vpRender(); maybeGameGuide("videopoker"); }
 function vpHideToFloor(){ document.getElementById("vp-overlay").classList.add("hidden"); showFloor(); }
 function vpRulesHTML(){
   return `<div class="bj-tip"><b>잭 오어 베터</b> — 5장을 받고, 남길 카드를 홀드한 뒤 나머지를 1번 드로우. 최종 족보가 <b>잭 페어 이상</b>이면 배당. 9/6은 풀하우스 9·플러시 6 배당의 풀페이 기계로, 완벽한 플레이 시 환수율 99.5%입니다.</div>`+
@@ -7288,7 +7349,7 @@ function slShow(){ hideLobby(); const m=SL.machine;
   ["sl-bulbs-top","sl-bulbs-bot"].forEach(id=>{ const w=document.getElementById(id); if(!w) return;
     if(w.children.length!==14){ w.innerHTML=""; for(let i=0;i<14;i++){ const b=document.createElement("div"); b.className="sl-bulb"; b.style.animationDelay=(i*0.08).toFixed(2)+"s"; w.appendChild(b); } } });
   const cab=document.getElementById("sl-machine"); if(cab){ cab.style.background=`linear-gradient(180deg,${m.cab[0]},${m.cab[1]})`; }
-  ov.classList.remove("hidden"); slRender(); slRenderReels();
+  ov.classList.remove("hidden"); slRender(); slRenderReels(); maybeGameGuide("slots");
   if((stats.credits||0)===0) setTimeout(maybeKickOut, 1300); }   // 빈털터리로 입장 → 퇴장 연출
 function slOpen(mi){ pauseTurnTimer(); SL.mi=((mi|0)%SLOT_MACHINES.length+SLOT_MACHINES.length)%SLOT_MACHINES.length; SL.machine=SLOT_MACHINES[SL.mi];
   SL.reels=SL.machine.symbols.slice(0,3).map(x=>x.s); SL.spinning=false; SL.lastWin=0; SL.lastLine=""; SL.started=true; slSave(); slShow(); }
@@ -7566,7 +7627,7 @@ function bcRenderControls(){
     if(a==="deal") bcDeal(); else if(a==="clear") bcClear(); else if(a==="again"){ bcResetRound(); bcRender(); } else if(a==="all") bcRevealAll(); });
   const dn=getDayNet("bc"); sessBadge(".bc-htitle","bc-sessnet",dn.net,dn.rounds);
 }
-function bcShow(){ hideLobby(); document.getElementById("bc-overlay").classList.remove("hidden"); bcRender(); }
+function bcShow(){ hideLobby(); document.getElementById("bc-overlay").classList.remove("hidden"); bcRender(); maybeGameGuide("baccarat"); }
 function bcStartGame(){ bcBuildShoe(); bcResetRound(); BC.started=true; bcSave(); }
 function bcOpenInfo(){
   const s=BC.stats; const tot=s.pWins+s.bWins+s.ties;
