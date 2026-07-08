@@ -1274,6 +1274,9 @@
     background:transparent; border:1px solid rgba(255,255,255,.15); box-shadow:none; }
   #floor-guide .fg-next, #game-guide .fg-next { font-size:13px; font-weight:800; color:#04241d; padding:8px 18px; border-radius:10px;
     background:linear-gradient(135deg,#3ddc97,#0fa36b); box-shadow:0 4px 12px rgba(20,160,107,.4); }
+  .fg-replay { display:block; width:100%; margin-top:14px; padding:10px; border-radius:12px;
+    font-size:13px; font-weight:700; color:#cfe8d6; cursor:pointer;
+    background:rgba(61,220,151,.08); border:1px solid rgba(61,220,151,.35); box-shadow:none; }
   /* 코치 이유 설명 */
   .coach-why { display:inline-block; margin-top:3px; font-size:.88em; font-weight:500; color:#b8ceda; line-height:1.45; }
   /* 액션 용어 마이크로카피 (첫 라운드) */
@@ -5091,7 +5094,7 @@ function renderHelp(){
       (g.e?`<div class="gl-ex">💡 ${g.e}</div>`:"")+`</div>`
     ).join("");
 }
-function openHelp(){ pauseTurnTimer(); renderHelp(); document.getElementById("help-overlay").classList.remove("hidden"); }
+function openHelp(){ pauseTurnTimer(); renderHelp(); guideReplayBtn("help-body","holdem"); document.getElementById("help-overlay").classList.remove("hidden"); }
 function closeHelp(){ document.getElementById("help-overlay").classList.add("hidden"); resumeTurnTimer(); }
 document.getElementById("help-toggle").onclick=openHelp;
 document.getElementById("help-close").onclick=closeHelp;
@@ -5940,6 +5943,19 @@ function renderGameGuide(){
   g.querySelector(".fg-skip").onclick=endGameGuide;
   g.querySelector(".fg-next").onclick=()=>{ if(last) endGameGuide(); else { _gg.idx++; renderGameGuide(); } };
 }
+// ❓ 배우기 모달에 "처음 안내 다시 보기" 버튼 부착 — 누르면 모달 닫고 가이드 재생
+function guideReplayBtn(bodyId, gameId){
+  const b=document.getElementById(bodyId); if(!b || b.querySelector(".fg-replay")) return;
+  const btn=document.createElement("button"); btn.className="fg-replay";
+  btn.textContent="🦉 처음 안내 다시 보기";
+  btn.onclick=()=>{
+    if(stats.guided) delete stats.guided[gameId]; saveStats();
+    const ov=document.getElementById(bodyId.replace("-body","-overlay")); if(ov) ov.classList.add("hidden");
+    resumeTurnTimer();
+    _gg={id:null, idx:0}; maybeGameGuide(gameId);
+  };
+  b.appendChild(btn);
+}
 
 // ---------- 학습 졸업 시스템 — 게임별 기본기를 익히면 졸업장 + 메달 ----------
 const GRADS={
@@ -6556,6 +6572,7 @@ function bjRecordsHTML(){
 function bjOpenInfo(){
   document.getElementById("bj-info-body").innerHTML=
     bjRulesHTML()+`<div class="set-label" style="margin-top:16px">내 기록</div>`+bjStatsHTML();
+  guideReplayBtn("bj-info-body","blackjack");
   document.getElementById("bj-info-overlay").classList.remove("hidden");
 }
 document.getElementById("bj-home").onclick=exitToFloor;
@@ -6834,6 +6851,7 @@ function rlRecordsHTML(){
 function rlOpenInfo(){
   document.getElementById("rl-info-body").innerHTML=
     rlRulesHTML()+`<div class="set-label" style="margin-top:6px">내 기록</div>`+rlStatsHTML();
+  guideReplayBtn("rl-info-body","roulette");
   document.getElementById("rl-info-overlay").classList.remove("hidden");
 }
 document.getElementById("rl-home").onclick=exitToFloor;
@@ -7152,6 +7170,7 @@ function vpRecordsHTML(){
 function vpOpenInfo(){
   document.getElementById("vp-info-body").innerHTML=
     vpRulesHTML()+`<div class="set-label">내 기록</div>`+vpStatsHTML();
+  guideReplayBtn("vp-info-body","videopoker");
   document.getElementById("vp-info-overlay").classList.remove("hidden");
 }
 document.getElementById("vp-home").onclick=exitToFloor;
@@ -7367,6 +7386,7 @@ function slOpenInfo(){
     `<div class="bj-tip"><b>하우스 엣지</b> — 슬롯은 환수율(RTP)이 고정돼 있어 오래 할수록 카지노가 이깁니다. 큰 배당은 드물게, 작은 배당은 자주 — "거의 맞을 뻔" 느낌이 들지만 장기적으론 마이너스예요.</div>`+
     `<div class="set-label">내 기록 (모든 머신 합산)</div>`+
     `<div class="bj-tip">스핀 ${s.spins}회 · 잭팟 ${s.jackpots}회 · 순손익 <b style="color:${net>=0?'#7fe9b0':'#ff9a9a'}">${net>=0?'+'+net:net}</b></div>`;
+  guideReplayBtn("sl-info-body","slots");
   document.getElementById("sl-info-overlay").classList.remove("hidden");
 }
 document.getElementById("sl-home").onclick=exitToFloor;
@@ -7643,6 +7663,7 @@ function bcOpenInfo(){
     `<div class="bj-tip"><b>핵심</b> — 뱅커가 통계적으로 약간 더 자주 이겨서, 5% 커미션을 떼도 <b>뱅커 베팅이 가장 유리</b>합니다. <b>타이는 배당이 커 보여도 엣지 14%</b>로 최악 — "한 방"의 유혹을 조심하세요.</div>`+
     `<div class="set-label">내 기록</div>`+
     `<div class="bj-tip">라운드 ${tot} · 플레이어 ${s.pWins} · 뱅커 ${s.bWins} · 타이 ${s.ties} · 순손익 <b style="color:${(s.won-s.wagered)>=0?'#7fe9b0':'#ff9a9a'}">${(s.won-s.wagered)>=0?'+':''}${(s.won-s.wagered).toLocaleString()}</b></div>`;
+  guideReplayBtn("bc-info-body","baccarat");
   document.getElementById("bc-info-overlay").classList.remove("hidden");
 }
 registerGame({
